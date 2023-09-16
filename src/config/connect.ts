@@ -12,7 +12,7 @@ const connectDB = () => {
   });
 
   db.once("open", () => {
-    console.log("MongoDB connected!");
+    console.log("MONGO DB CONNECTED ");
   });
 };
 

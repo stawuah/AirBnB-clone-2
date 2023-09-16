@@ -23,13 +23,9 @@ const userSchema = new Schema({
     },
   },
   authentication: {
-    password: {
-      type: String,
-      required: [true, "Dear customer please use your usual email password "],
-      select: false,
-      salt: { type: String, select: false },
-      sessionToken: { type: String, select: false },
-    },
+    password: { type: String, required: true, select: false },
+    salt: { type: String, select: false },
+    sessionToken: { type: String, select: false },
   },
 });
 

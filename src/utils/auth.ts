@@ -4,7 +4,7 @@ dotenv.config({ path: __dirname + "/.env" });
 
 const STRONG = process.env.SECRET;
 
-export const authentication = (salt: string, password: string): string => {
+export const authentication = (salt: string, password: string): String => {
   return crypto
     .createHmac("sha256", [salt, password].join("/"))
     .update(STRONG)

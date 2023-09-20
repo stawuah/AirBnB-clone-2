@@ -2,6 +2,27 @@ import express from "express";
 import { createUser, getUserByEmail } from "../model/userSchema";
 import { authentication, random } from "../utils/auth";
 
+export const logout = async (req: express.Request, res: express.Response) => {
+  try {
+    // Clear the session token cookie
+    res.clearCookie("HTINNDFKJ", {
+      domain: "localhost",
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "You have been logged out successfully!",
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 export const login = async (req: express.Request, res: express.Response) => {
   try {
     const { email, password } = req.body;

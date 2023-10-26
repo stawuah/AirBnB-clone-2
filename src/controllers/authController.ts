@@ -2,7 +2,7 @@ import express from "express";
 import { createUser, getUserByEmail } from "../model/userSchema";
 import { OTP } from "../model/forgotPassword";
 import { authentication, random } from "../utils/auth";
-import { ex } from "../utils/otp";
+import { expitationAndOtp } from "../utils/otp";
 
 export const ForgortPassword = async (
   req: express.Request,
@@ -21,7 +21,7 @@ export const ForgortPassword = async (
       return;
     }
 
-    const otp = ex().otp;
+    const otp = expitationAndOtp().otp;
     const expirationTime = new Date();
     expirationTime.setTime(new Date().getTime() + 3 * 60 * 1000); // Expire after 3 minutes
 

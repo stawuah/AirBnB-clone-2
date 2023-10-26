@@ -1,4 +1,4 @@
-import { Schema, InferSchemaType } from "mongoose";
+import { Schema, InferSchemaType, model } from "mongoose";
 import mongoose from "mongoose";
 
 const userSchema = new Schema({
@@ -36,6 +36,8 @@ export const User = mongoose.model("User", userSchema);
 // User Actions
 export const getUsers = () => User.find();
 export const getUserByEmail = (email: string) => User.findOne({ email });
+// export const getUserByEmailAndName = (email: string, name: string) =>
+//   User.findOne({ email, name });
 export const getUserBySessionToken = (sessionToken: string) =>
   User.findOne({ "authentication.sessionToken": sessionToken });
 export const getUserById = (id: string) => User.findById(id);

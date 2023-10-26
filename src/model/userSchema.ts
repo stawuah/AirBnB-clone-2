@@ -1,5 +1,20 @@
-import { Schema, InferSchemaType, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 import mongoose from "mongoose";
+
+interface User extends Document {
+  name: string;
+  email: string;
+  image: {
+    public_id: string[];
+    url: string[];
+  };
+  authentication: {
+    password: string;
+    salt: string;
+    sessionToken: string;
+  };
+  forgotPassword?: string; // Assuming this is of type mongoose.Schema.Types.ObjectId
+}
 
 const userSchema = new Schema({
   name: {
@@ -27,11 +42,15 @@ const userSchema = new Schema({
     salt: { type: String, select: false },
     sessionToken: { type: String, select: false },
   },
+  forgotPassword: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ForgotSchema",
+  },
 });
 
-type User = InferSchemaType<typeof userSchema>;
+const User = model<User>("User", userSchema);
 
-export const User = mongoose.model("User", userSchema);
+export { User };
 
 // User Actions
 export const getUsers = () => User.find();

@@ -1,5 +1,4 @@
 import { Schema, model, Types } from "mongoose";
-import mongoose from "mongoose";
 
 type OTP = {
   userId: Types.ObjectId;
@@ -25,14 +24,3 @@ const OTPSchema = new Schema<OTP>({
 });
 
 export const OTP = model<OTP>("OTP", OTPSchema);
-
-// type OTP = InferSchemaType<typeof OTPSchema>;
-
-// export const OTP = mongoose.model("OTP", OTPSchema);
-
-// export const createOTP = (
-//   name: string,
-//   email: string,
-//   token: string,
-//   userId: string
-// ) => OTP(name, email, token, userId );

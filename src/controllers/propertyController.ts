@@ -3,7 +3,6 @@ import { PropertyModel } from "../model/propertySchema";
 import cloudinary from "cloudinary";
 import { v2 as cloudinaryV2 } from "cloudinary";
 import dotenv from "dotenv";
-import { Types } from "mongoose";
 import twilio from "twilio";
 
 dotenv.config();
@@ -46,7 +45,7 @@ const getAllProperty = async (req: Request, res: Response) => {
   try {
     const properties = await PropertyModel.find().populate({
       path: "owner",
-      select: "name, email",
+      select: "name.email",
     });
     res.json({ count: properties.length, properties }).status(200);
   } catch (error) {
@@ -62,7 +61,7 @@ const uploadImage = async (imagePath: string) => {
   };
 
   try {
-    const result = await cloudinary.upload(imagePath, options);
+    const result = await cloudinary.uploader.upload(imagePath, options);
     return result;
   } catch (error) {
     console.error(error);

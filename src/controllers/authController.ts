@@ -44,10 +44,14 @@ export const ForgortPassword = async (
         expirationTime: { $lte: new Date(currentTime) }, // Find documents expired 15 days ago
       });
 
-      expiredDocuments.forEach(async (document) => {
-        await OTP.deleteOne({ _id: document._id });
-        console.log(`Expired document with ID ${document._id} deleted`);
-      });
+      const deletedDocuments = await Promise.all(
+        expiredDocuments.map(async (document) => {
+          await OTP.deleteOne({ _id: document._id });
+          console.log(`Expired document with ID ${document._id} deleted`);
+        })
+      );
+
+      console.log(`Deleted ${deletedDocuments.length} expired documents.`);
     }, 15 * 24 * 60 * 60 * 1000); // Schedule task to run after 15 days
 
     console.log(

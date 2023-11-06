@@ -8,12 +8,15 @@ interface User extends Document {
     public_id: string[];
     url: string[];
   };
-  authentication: {
-    password: string;
-    salt: string;
-    sessionToken: string;
-  };
+  password: string;
+  salt: string;
+  otp: number;
+  otp_expiry: Date;
+  phone: string;
+
   forgotPassword?: string; // Assuming this is of type mongoose.Schema.Types.ObjectId
+
+  verified: boolean;
 }
 
 const userSchema = new Schema({
@@ -37,15 +40,16 @@ const userSchema = new Schema({
       type: [String],
     },
   },
-  authentication: {
-    password: { type: String, required: true, select: false },
-    salt: { type: String, select: false },
-    sessionToken: { type: String, select: false },
-  },
+  otp: { type: Number },
+  otp_expiry: { type: Date },
+  password: { type: String, required: true },
+  salt: { type: String, required: true },
+  phone: { type: String, required: true },
   forgotPassword: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ForgotSchema",
   },
+  verified: { type: Boolean },
 });
 
 const User = model<User>("User", userSchema);

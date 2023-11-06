@@ -1,14 +1,60 @@
-import crypto from "crypto";
-import * as dotenv from "dotenv";
-dotenv.config({ path: __dirname + "/.env" });
+// import crypto from "crypto";
+// import * as dotenv from "dotenv";
+// dotenv.config({ path: __dirname + "/.env" });
 
-const STRONG = process.env.SECRET;
+// const STRONG = process.env.SECRET;
 
-export const authentication = (salt: string, password: string): String => {
-  return crypto
-    .createHmac("sha256", [salt, password].join("/"))
-    .update(STRONG)
-    .digest("hex");
+// export const authentication = (salt: string, password: string): String => {
+//   return crypto
+//     .createHmac("sha256", [salt, password].join("/"))
+//     .update(STRONG)
+//     .digest("hex");
+// };
+
+// export const random = () => crypto.randomBytes(128).toString("base64");
+
+import bcrypt from "bcrypt";
+import { Request } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
+
+import { AuthPayload } from "../dto/authDto";
+
+export const GenerateSalt = async () => {
+  return await bcrypt.genSalt();
 };
 
-export const random = () => crypto.randomBytes(128).toString("base64");
+export const GeneratePassword = async (password: string, salt: string) => {
+  return await bcrypt.hash(password, salt);
+};
+
+export const ValidatePassword = async (
+  enteredPassword: string,
+  savedPassword: string,
+  salt: string
+) => {
+  return (await GeneratePassword(enteredPassword, salt)) === savedPassword;
+};
+
+export const GenerateSignature = async (payload: AuthPayload) => {
+  return jwt.sign(payload, process.env.SECRET, { expiresIn: "90d" });
+};
+
+export const ValidateSignature = async (req: Request) => {
+  const signature = req.get("Authorization");
+
+  if (signature) {
+    try {
+      const payload = (await jwt.verify(
+        signature.split(" ")[1],
+        process.env.APP_SECRET
+      )) as AuthPayload;
+      req.user = payload;
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+  return false;
+};

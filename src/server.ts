@@ -7,7 +7,7 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 dotenv.config({ path: __dirname + "/.env" });
 import connectDB from "./config/connect";
-import router from "./router/indexRoute";
+import { AuthRoute } from "./router/authenticationRoute";
 connectDB();
 const app = express();
 
@@ -21,7 +21,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-app.use("/", router());
+app.use("/auth", AuthRoute);
 const server = http.createServer(app);
 
 server.listen(3030, () => {

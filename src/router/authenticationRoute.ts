@@ -1,14 +1,27 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import {
-  register,
-  login,
-  logout,
-  ForgortPassword,
+  CustomerLogin,
+  CustomerSignUp,
+  CustomerVerify,
+  RequestOtp,
 } from "../controllers/authController";
+import { Authenticate } from "../middleware/commonAuth";
 
-export default (router: express.Router) => {
-  router.post("/auth/register", register);
-  router.post("/auth/login", login);
-  router.get("/auth/logout", logout);
-  router.get("/auth/forgotPassword", ForgortPassword);
-};
+const router = express.Router();
+
+/* ------------------- Suignup / Create Customer --------------------- */
+router.post("/signup", CustomerSignUp);
+
+/* ------------------- Login --------------------- */
+router.post("/login", CustomerLogin);
+
+/* ------------------- Authentication --------------------- */
+router.use(Authenticate);
+
+/* ------------------- Verify Customer Account --------------------- */
+router.patch("/verify", CustomerVerify);
+
+/* ------------------- OTP / request OTP --------------------- */
+router.get("/otp", RequestOtp);
+
+export { router as AuthRoute };

@@ -1,0 +1,63 @@
+name: AirBnB-clone2 CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    env:
+      MONGO_URI: mongodb://localhost:27017/my_database
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js (Ubuntu)
+        uses: actions/setup-node@v2
+        with:
+          node-version: "19"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+  build-alpine:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
+    env:
+      MONGO_URI: mongodb://localhost:27017/my_database
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js (Alpine)
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+          node-architecture: "x64"
+          node-platform: "linux"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build

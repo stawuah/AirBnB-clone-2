@@ -3,12 +3,11 @@ import { Request, Response } from "express";
 require("dotenv").config();
 
 const createReservation = async (req: Request, res: Response) => {
+  const { property, checkIn, checkOut, guests, totalPrice } = req.body;
   try {
-    const { user, property, checkIn, checkOut, guests, totalPrice } = req.body;
-
     // Create a new reservation object
     const reservation = new ReservationModel({
-      user,
+      user: req.user._id,
       property,
       checkIn,
       checkOut,

@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.post("/addrating", addRatingToProperty);
 
+/* ------------------- Authentication --------------------- */
+router.use(Authenticate);
 /* ------------------- Get rating of property / --------------------- */
 
 router.post("/getratings", getPropertyRatings);

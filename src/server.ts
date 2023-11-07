@@ -9,6 +9,7 @@ dotenv.config({ path: __dirname + "/.env" });
 import connectDB from "./config/connect";
 import { AuthRoute } from "./router/authenticationRoute";
 import { RatingRoute } from "./router/ratings";
+import { ReservationRoute } from "./router/reservations";
 connectDB();
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 
 app.use("/auth", AuthRoute);
 app.use("/rate", RatingRoute);
+app.use("/resprop", ReservationRoute);
 const server = http.createServer(app);
 
 server.listen(3030, () => {

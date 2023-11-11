@@ -20,6 +20,7 @@ interface Property extends Document {
   date: Date;
   created_at: Date;
   updated_at: Date;
+  phone: number;
 }
 
 const PropertySchema = new Schema({
@@ -68,6 +69,10 @@ const PropertySchema = new Schema({
       type: [String],
     },
   },
+  phone: {
+    type: Number,
+    required: true,
+  },
   available: { type: Boolean, required: true, default: true },
   date: {
     type: Date,
@@ -79,4 +84,4 @@ const PropertySchema = new Schema({
 
 const PropertyModel = model<Property>("Property", PropertySchema);
 
-export { PropertyModel };
+export { PropertyModel, Property };

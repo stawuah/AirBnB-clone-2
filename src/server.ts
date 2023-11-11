@@ -10,6 +10,8 @@ import connectDB from "./config/connect";
 import { AuthRoute } from "./router/authenticationRoute";
 import { RatingRoute } from "./router/ratings";
 import { ReservationRoute } from "./router/reservations";
+import { BookingRoute } from "./router/booking";
+import { PropertyRoute } from "./router/property";
 connectDB();
 const app = express();
 
@@ -26,6 +28,8 @@ app.use(bodyParser.json());
 app.use("/auth", AuthRoute);
 app.use("/rate", RatingRoute);
 app.use("/resprop", ReservationRoute);
+app.use("/bookprop", BookingRoute);
+app.use("/property", PropertyRoute);
 const server = http.createServer(app);
 
 server.listen(3030, () => {

@@ -1,8 +1,5 @@
 // import express from "express";
-// import { createUser, getUserByEmail } from "../model/userSchema";
-import { OTP } from "../model/forgotPassword";
-// import { authentication, random } from "../utils/auth";
-// import { expitationAndOtp } from "../utils/otp";
+import { getUserByEmail } from "../model/userSchema";
 
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
@@ -60,7 +57,6 @@ export const CustomerSignUp = async (
     verified: false,
     lat: 0,
     lng: 0,
-    orders: [],
   });
 
   if (result) {
@@ -190,85 +186,85 @@ export const RequestOtp = async (
 
   return res.status(400).json({ msg: "Error with Requesting OTP" });
 };
-// export const ForgortPassword = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     const { email } = req.body;
-//     console.log(email);
 
-//     const existingUser = await getUserByEmail(email);
+export const ForgortPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
 
-//     console.log(existingUser);
+    const existingUser = await getUserByEmail(email);
 
-//     if (!existingUser) {
-//       res.status(401).json({ message: "Only valid credentials required" });
-//       return;
-//     }
+    console.log(existingUser);
 
-//     const otp = expitationAndOtp().otp;
-//     const expirationTime = new Date();
-//     expirationTime.setTime(new Date().getTime() + 3 * 60 * 1000); // Expire after 3 minutes
+    if (!existingUser) {
+      return res
+        .status(401)
+        .json({ message: "Only valid credentials required" });
+    }
 
-//     const user = new OTP({
-//       userId: existingUser._id,
-//       token: otp,
-//       expirationTime: expirationTime,
-//     });
+    const profile = await User.findById(existingUser._id);
 
-//     console.log(user.token);
+    if (profile) {
+      const { otp, expiry } = GenerateOtp();
+      profile.otp = otp;
+      profile.otp_expiry = expiry;
 
-//     await user.save();
+      const sendCode = await onRequestOTP(otp, profile.phone);
 
-//     // Schedule a task to delete the OTP after 15 days
-//     setTimeout(async () => {
-//       const currentTime = Date.now() - 15 * 24 * 60 * 60 * 1000; // 15 days ago
+      if (!sendCode) {
+        return res.status(400).json({
+          message: "Failed to verify your phone number to send you your code",
+        });
+      }
 
-//       const expiredDocuments = await OTP.find({
-//         token: otp,
-//         expirationTime: { $lte: new Date(currentTime) }, // Find documents expired 15 days ago
-//       });
+      return res.status(200).json({
+        message: "OTP has been sent to your registered Mobile Number!",
+      });
+    }
+    console.log(profile.otp);
 
-//       const deletedDocuments = await Promise.all(
-//         expiredDocuments.map(async (document) => {
-//           await OTP.deleteOne({ _id: document._id });
-//           console.log(`Expired document with ID ${document._id} deleted`);
-//         })
-//       );
+    await profile.save();
 
-//       console.log(`Deleted ${deletedDocuments.length} expired documents.`);
-//     }, 15 * 24 * 60 * 60 * 1000); // Schedule task to run after 15 days
+    // Schedule a task to delete the OTP after 15 days
+    setTimeout(async () => {
+      let currentTime: Date = new Date();
+      currentTime.setTime(new Date().getTime() + 15 * 24 * 60 * 60 * 1000); // 15 days ago
 
-//     console.log(
-//       user.userId,
-//       "------------from expired documents--------------"
-//     );
-//     console.log(user);
+      if (profile) {
+        const { otp, expiry } = GenerateOtp();
+        profile.otp = otp;
+        profile.otp_expiry = expiry;
 
-//     res.status(200).json({ user }).end();
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+        if (profile.otp_expiry <= currentTime) {
+          return true;
+        }
+        delete profile;
+      }
+    }, 15 * 24 * 60 * 60 * 1000); // Schedule task to run after 15 days
 
-// export const logout = async (req: Request, res: Response) => {
-//   try {
-//     // Clear the session token cookie
-//     res.clearCookie("HTINNDFKJ", {
-//       domain: "localhost",
-//       sameSite: "none",
-//       secure: true,
-//     });
+    return res.status(200).end();
+  } catch (error: any) {
+    console.log(error.toString());
+  }
+};
 
-//     res.status(200).json({
-//       success: true,
-//       message: "You have been logged out successfully!",
-//       expires: new Date(Date.now() + 10 * 1000),
-//       httpOnly: true,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
+export const logout = async (req: Request, res: Response) => {
+  try {
+    // Clear the session token cookie
+    res.clearCookie("HTINNDFKJ", {
+      domain: "localhost",
+      sameSite: "none",
+      secure: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "You have been logged out successfully!",
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

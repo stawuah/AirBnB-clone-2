@@ -1,14 +1,15 @@
 import { Document, Types, Schema, model } from "mongoose";
 
-interface Reservation extends Document {
+interface IReservation extends Document {
   user: Types.ObjectId; // Assuming user is of type mongoose.Schema.Types.ObjectId
   property: Types.ObjectId; // Assuming property is of type mongoose.Schema.Types.ObjectId
   checkIn: Date;
   checkOut: Date;
   guests: number;
   totalPrice: number;
-  status: "pending" | "confirmed" | "cancelled";
+  availability: "pending" | "confirmed" | "cancelled";
   createdAt: Date;
+  phone: number;
 }
 
 const ReservationSchema: Schema = new Schema({
@@ -37,14 +38,18 @@ const ReservationSchema: Schema = new Schema({
     type: Number,
     required: true,
   },
-  status: {
+  availability: {
     type: String,
     enum: ["pending", "confirmed", "cancelled"],
     default: "pending",
   },
+  phone: {
+    type: Number,
+    required: true,
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
-const ReservationModel = model<Reservation>("Reservation", ReservationSchema);
+const ReservationModel = model<IReservation>("Reservation", ReservationSchema);
 
-export { ReservationModel };
+export { ReservationModel, IReservation };

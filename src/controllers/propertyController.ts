@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { PropertyModel } from "../model/propertySchema";
+import { onRequestMessage } from "../utils/Notification";
 import cloudinary from "cloudinary";
 import { v2 as cloudinaryV2 } from "cloudinary";
 import dotenv from "dotenv";
@@ -81,10 +82,12 @@ const createProperty = async (req: Request, res: Response) => {
       zipcode,
       available,
       image,
+      phone,
     } = req.body;
     const imagePublic = await uploadImage(image);
 
-    const newProperty = new PropertyModel({
+    const newProperty = await PropertyModel.create({
+      owner: req.user._id,
       title,
       description,
       price,
@@ -98,19 +101,23 @@ const createProperty = async (req: Request, res: Response) => {
         public_id: imagePublic.public_id,
         url: imagePublic.secure_url,
       },
+      phone: phone,
     });
+    const sendMessage = await onRequestMessage(
+      phone,
+      "Hello, you have just made your bookings live it love it !!"
+    );
 
-    client.messages
-      .create({
-        from: "<YOUR_TWILIO_PHONE_NUMBER>",
-        to: "<USER_PHONE_NUMBER>",
-        body: `Hello ${newProperty.title}, Thank you for adding your property with Hunt's. Make much and help more!`,
-      })
-      .then((message) => console.log("Message has been sent"));
+    // client.messages
+    //   .create({
+    //     from: "<YOUR_TWILIO_PHONE_NUMBER>",
+    //     to: "<USER_PHONE_NUMBER>",
+    //     body: `Hello ${newProperty.title}, Thank you for adding your property with Hunt's. Make much and help more!`,
+    //   })
+    //   .then((message) => console.log("Message has been sent"));
 
     const savedProperty = await newProperty.save();
-    console.log("savedProperty", savedProperty);
-    res.status(201).json({ savedProperty });
+    res.status(201).json({ savedProperty, sendMessage });
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: "Server error" });

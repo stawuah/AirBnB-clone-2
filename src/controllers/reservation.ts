@@ -1,33 +1,49 @@
 import { ReservationModel } from "../model/reservationSchema";
 import { Request, Response } from "express";
+import { onRequestMessage } from "../utils/Notification";
+import { ReservationInput } from "dto/customerDto";
+import { plainToClass } from "class-transformer";
+import { PropertyModel } from "../model/propertySchema";
+import { validate } from "class-validator";
 require("dotenv").config();
 
 const createReservation = async (req: Request, res: Response) => {
-  const { property, checkIn, checkOut, guests, totalPrice } = req.body;
+  const reservationInputs = plainToClass(ReservationInput, req.body);
+
+  const validationError = await validate(reservationInputs, {
+    validationError: { target: true },
+  });
+
+  if (validationError.length > 0) {
+    return res.status(400).json(validationError);
+  }
+
+  const id = req.params.id;
+  const property = await PropertyModel.findById(id);
+
+  const { checkIn, checkOut, availability, guests, totalPrice, phone } =
+    reservationInputs;
   try {
-    // Create a new reservation object
-    const reservation = new ReservationModel({
+    // Create a new reservation
+    const reservation = await ReservationModel.create({
+      property: property._id,
       user: req.user._id,
-      property,
       checkIn,
       checkOut,
       guests,
       totalPrice,
+      availability,
+      phone: phone,
     });
 
     // Save the reservation to the database
     const savedReservation = await reservation.save();
+    const sendMessage = await onRequestMessage(
+      phone,
+      "Hello, you have just made your bookings live it love it !!"
+    );
 
-    // Send Twilio message
-    // twilio.messages
-    //   .create({
-    //     from: '<users phone number>',
-    //     to: '<<user Phone number{should follow type of country code format}>>',
-    //     body: `Hello, you have just made your bookings live life !!`
-    //   })
-    //   .then(() => console.log("Message has been sent"));
-
-    res.status(201).json(savedReservation); // Return the saved reservation
+    res.status(201).json({ savedReservation, sendMessage }); // Return the saved reservation
   } catch (error) {
     res.status(500).json({ error: "Failed to create reservation" });
   }

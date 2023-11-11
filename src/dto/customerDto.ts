@@ -25,3 +25,18 @@ export class CreateCustomerInput {
   @Length(6, 12)
   password: string;
 }
+export class ReservationInput {
+  checkIn: Date;
+
+  checkOut: Date;
+
+  availability: boolean;
+
+  @Length(4, 6)
+  guests: number;
+
+  totalPrice: number;
+
+  @Length(7, 12)
+  phone: number;
+}

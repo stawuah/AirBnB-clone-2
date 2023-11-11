@@ -54,7 +54,6 @@ jobs:
         with:
           node-version: "18"
           node-architecture: "x64"
-          node-platform: "linux"
 
       - name: Install dependencies
         run: npm install

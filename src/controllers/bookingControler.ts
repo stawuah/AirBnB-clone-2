@@ -36,10 +36,8 @@ const bookProperty = async (req: Request, res: Response) => {
       }
     }
 
-    const user = { _id: Types.ObjectId };
-
     const booking = new BookingModel({
-      user: user._id,
+      user: req.user._id,
       checkIn: req.body.checkIn,
       checkOut: req.body.checkOut,
       property: property._id,

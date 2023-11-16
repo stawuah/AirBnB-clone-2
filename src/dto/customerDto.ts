@@ -24,6 +24,8 @@ export class CreateCustomerInput {
 
   @Length(6, 12)
   password: string;
+
+  name: string;
 }
 export class ReservationInput {
   checkIn: Date;

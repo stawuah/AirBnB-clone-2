@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import { BookingModel } from "../model/bookingSchema";
 import { PropertyModel } from "../model/propertySchema";
+import twilio from "twilio";
 import dotenv from "dotenv";
-import { onRequestMessage } from "../utils/Notification";
+import { Types } from "mongoose";
 
 dotenv.config();
+
+const client = twilio(process.env.SID!, process.env.AUTH_TOKEN!);
 
 const bookProperty = async (req: Request, res: Response) => {
   try {
@@ -47,12 +50,17 @@ const bookProperty = async (req: Request, res: Response) => {
     property.available = false;
     await property.save();
 
-    const sendMessage = await onRequestMessage(
-      req.user.phone,
-      "Hello, you have just made your bookings live it !!"
-    ).then(() => console.log("Message has been sent to the user"));
+    res
+      .status(201)
+      .json({ booking, message: "Thanks for booking this property" });
 
-    res.status(201).json({ booking, sendMessage });
+    client.messages
+      .create({
+        from: "twilio phone number",
+        to: "<users phone number>",
+        body: `Hello, you have just made your bookings live it !!`,
+      })
+      .then((message) => console.log("Message has been sent"));
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Server error" });
@@ -61,16 +69,14 @@ const bookProperty = async (req: Request, res: Response) => {
 
 const getAllBookedProperties = async (req: Request, res: Response) => {
   try {
-    const allProperty = await BookingModel.find()
-      .populate({
-        path: "user",
-        select: "name ,  email",
-      })
-      .limit(35);
+    const allProperty = await BookingModel.find().populate({
+      path: "user",
+      select: "name ,  email",
+    });
 
     res.json({ count: allProperty.length, allProperty }).status(200);
   } catch (e) {
-    res.status(500).json({ e, message: "Server error" });
+    res.status(500).json({ message: "Server error" });
     console.log(e);
   }
 };
@@ -98,12 +104,15 @@ const updateBookedProperty = async (req: Request, res: Response) => {
 
     await booking.save();
 
-    const sendMessage = await onRequestMessage(
-      req.user.phone,
-      "Hello, you have just updated your bookings live it love it !!"
-    ).then(() => console.log("Message has been sent to the user"));
+    res.status(200).json({ booking, message: "Booking updated successfully" });
 
-    res.status(200).json({ booking, sendMessage });
+    client.messages
+      .create({
+        from: "twilio phone number",
+        to: "<users phone number>",
+        body: `Hello, you have just updated your bookings with AirBnB. live it!!`,
+      })
+      .then((message) => console.log("Message has been sent"));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

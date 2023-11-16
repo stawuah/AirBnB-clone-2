@@ -1,7 +1,7 @@
 import { ReservationModel } from "../model/reservationSchema";
 import { Request, Response } from "express";
 import { onRequestMessage } from "../utils/Notification";
-import { ReservationInput } from "dto/customerDto";
+import { ReservationInput } from "../dto/customerDto";
 import { plainToClass } from "class-transformer";
 import { PropertyModel } from "../model/propertySchema";
 import { validate } from "class-validator";
@@ -41,7 +41,7 @@ const createReservation = async (req: Request, res: Response) => {
     const sendMessage = await onRequestMessage(
       phone,
       "Hello, you have just made your bookings live it love it !!"
-    );
+    ).then(() => console.log("Message has been sent to the user"));
 
     res.status(201).json({ savedReservation, sendMessage }); // Return the saved reservation
   } catch (error) {
@@ -51,10 +51,12 @@ const createReservation = async (req: Request, res: Response) => {
 
 const getAllreservedProperty = async (req: Request, res: Response) => {
   try {
-    const property = await ReservationModel.find().populate({
-      path: "user",
-      select: "name , email",
-    });
+    const property = await ReservationModel.find()
+      .populate({
+        path: "user",
+        select: "name , email",
+      })
+      .limit(10);
 
     const reservedProperty = property.length;
 

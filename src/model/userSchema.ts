@@ -4,41 +4,26 @@ import mongoose from "mongoose";
 interface User extends Document {
   name: string;
   email: string;
-  image: {
-    public_id: string[];
-    url: string[];
-  };
   password: string;
   salt: string;
   otp: number;
   otp_expiry: Date;
   phone: string;
-
   forgotPassword?: string; // Assuming this is of type mongoose.Schema.Types.ObjectId
-
   verified: boolean;
 }
 
 const userSchema = new Schema({
   name: {
     type: String,
-    required: [true, "Dear customer please add a name"],
+    required: true,
   },
   email: {
     type: String,
-    required: [true, "Dear customer please add a name"],
+    required: true,
     unique: true,
     lowercase: true,
     trim: true,
-    match: [/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/, "Please your email"],
-  },
-  image: {
-    public_id: {
-      type: [String],
-    },
-    url: {
-      type: [String],
-    },
   },
   otp: { type: Number },
   otp_expiry: { type: Date },

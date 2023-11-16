@@ -40,8 +40,10 @@ export const CustomerSignUp = async (
 
   const existingCustomer = await User.find({ email: email });
 
-  if (existingCustomer !== null) {
-    return res.status(400).json({ message: "Email already exist!" });
+  if (existingCustomer) {
+    return res
+      .status(400)
+      .json({ message: "Email already exists!!!!!!!!!!!!!" });
   }
 
   const result = await User.create({
@@ -55,8 +57,6 @@ export const CustomerSignUp = async (
     lastName: "",
     address: "",
     verified: false,
-    lat: 0,
-    lng: 0,
   });
 
   if (result) {
@@ -72,7 +72,12 @@ export const CustomerSignUp = async (
     // Send the result
     return res
       .status(201)
-      .json({ signature, verified: result.verified, email: result.email });
+      .json({
+        signature,
+        verified: result.verified,
+        email: result.email,
+        result,
+      });
   }
 
   return res.status(400).json({ msg: "Error while creating user" });
@@ -107,6 +112,7 @@ export const CustomerLogin = async (
         _id: customer._id,
         email: customer.email,
         verified: customer.verified,
+        phone: "",
       });
 
       return res.status(200).json({
@@ -204,6 +210,10 @@ export const ForgortPassword = async (req: Request, res: Response) => {
 
     const profile = await User.findById(existingUser._id);
 
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
     if (profile) {
       const { otp, expiry } = GenerateOtp();
       profile.otp = otp;
@@ -238,13 +248,15 @@ export const ForgortPassword = async (req: Request, res: Response) => {
         if (profile.otp_expiry <= currentTime) {
           return true;
         }
-        delete profile;
+        delete profile.otp;
+        delete profile.otp_expiry;
       }
     }, 15 * 24 * 60 * 60 * 1000); // Schedule task to run after 15 days
 
     return res.status(200).end();
-  } catch (error: any) {
-    console.log(error.toString());
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

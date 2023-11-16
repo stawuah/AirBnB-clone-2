@@ -31,31 +31,29 @@ export const CustomerSignUp = async (
     return res.status(400).json(validationError);
   }
 
-  const { email, phone, password } = customerInputs;
+  const { email, phone, password, name } = customerInputs;
 
   const salt = await GenerateSalt();
   const userPassword = await GeneratePassword(password, salt);
 
   const { otp, expiry } = GenerateOtp();
 
-  const existingCustomer = await User.find({ email: email });
+  const existingCustomer = await getUserByEmail(email);
 
   if (existingCustomer) {
     return res
       .status(400)
-      .json({ message: "Email already exists!!!!!!!!!!!!!" });
+      .json({ message: "Email already exists, please use a different email" });
   }
 
-  const result = await User.create({
+  const result = await new User({
     email: email,
     password: userPassword,
     salt: salt,
     phone: phone,
     otp: otp,
     otp_expiry: expiry,
-    firstName: "",
-    lastName: "",
-    address: "",
+    name,
     verified: false,
   });
 
@@ -70,14 +68,12 @@ export const CustomerSignUp = async (
       verified: result.verified,
     });
     // Send the result
-    return res
-      .status(201)
-      .json({
-        signature,
-        verified: result.verified,
-        email: result.email,
-        result,
-      });
+    return res.status(201).json({
+      signature,
+      verified: result.verified,
+      email: result.email,
+      result,
+    });
   }
 
   return res.status(400).json({ msg: "Error while creating user" });

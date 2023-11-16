@@ -40,7 +40,7 @@ export const onRequestOTP = async (otp: number, toPhoneNumber: string) => {
   }
 };
 
-export const onRequestMessage = async (toPhoneNumber: string, body: string) => {
+export const onRequestMessage = async (toPhoneNumber: number, body: string) => {
   try {
     const accountSid = "Your Account SID from TWILIO DASHBOARD";
     const authToken = "YOUR AUTH TOKEN AS I SAID ON VIDEO";

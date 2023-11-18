@@ -16,7 +16,7 @@ import {
   ValidatePassword,
 } from "../utils/index";
 
-export const CustomerSignUp = async (
+const CustomerSignUp = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -40,12 +40,11 @@ export const CustomerSignUp = async (
 
   const existingCustomer = await getUserByEmail(email);
 
-
   if (existingCustomer) {
     return res
       .status(400)
       .json({ message: "Email already exists, please use a different email" });
-
+  }
   const result = await new User({
     email: email,
     password: userPassword,
@@ -77,13 +76,12 @@ export const CustomerSignUp = async (
       email: result.email,
       result,
     });
-
   }
 
   return res.status(400).json({ msg: "Error while creating user" });
 };
 
-export const CustomerLogin = async (
+const CustomerLogin = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -125,7 +123,7 @@ export const CustomerLogin = async (
   return res.json({ msg: "Error With Signup" });
 };
 
-export const CustomerVerify = async (
+const CustomerVerify = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -159,11 +157,7 @@ export const CustomerVerify = async (
   return res.status(400).json({ msg: "Unable to verify Customer" });
 };
 
-export const RequestOtp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const RequestOtp = async (req: Request, res: Response, next: NextFunction) => {
   const customer = req.user;
 
   if (customer) {
@@ -192,7 +186,7 @@ export const RequestOtp = async (
   return res.status(400).json({ msg: "Error with Requesting OTP" });
 };
 
-export const ForgortPassword = async (req: Request, res: Response) => {
+const ForgortPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
     console.log(email);
@@ -243,7 +237,7 @@ export const ForgortPassword = async (req: Request, res: Response) => {
         if (profile.otp_expiry <= currentTime) {
           return true;
         }
-        delete profile;
+        delete profile.otp;
       }
     }, 15 * 24 * 60 * 60 * 1000); // Schedule task to run after 15 days
 
@@ -252,8 +246,7 @@ export const ForgortPassword = async (req: Request, res: Response) => {
     console.log(error.toString());
   }
 };
-
-export const logout = async (req: Request, res: Response) => {
+const logout = async (req: Request, res: Response) => {
   try {
     // Clear the session token cookie
     res.clearCookie("HTINNDFKJ", {
@@ -272,4 +265,13 @@ export const logout = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+};
+
+module.exports = {
+  CustomerLogin,
+  CustomerSignUp,
+  CustomerVerify,
+  RequestOtp,
+  ForgortPassword,
+  logout,
 };

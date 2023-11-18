@@ -16,7 +16,7 @@ import {
   ValidatePassword,
 } from "../utils/index";
 
-const CustomerSignUp = async (
+export const CustomerSignUp = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -81,7 +81,7 @@ const CustomerSignUp = async (
   return res.status(400).json({ msg: "Error while creating user" });
 };
 
-const CustomerLogin = async (
+export const CustomerLogin = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -123,7 +123,7 @@ const CustomerLogin = async (
   return res.json({ msg: "Error With Signup" });
 };
 
-const CustomerVerify = async (
+export const CustomerVerify = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -157,7 +157,11 @@ const CustomerVerify = async (
   return res.status(400).json({ msg: "Unable to verify Customer" });
 };
 
-const RequestOtp = async (req: Request, res: Response, next: NextFunction) => {
+export const RequestOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const customer = req.user;
 
   if (customer) {

@@ -40,6 +40,8 @@ export const onRequestOTP = async (otp: number, toPhoneNumber: string) => {
   }
 };
 
+/* ------------------- Notifications --------------------- */
+
 export const onRequestMessage = async (toPhoneNumber: number, body: string) => {
   try {
     const accountSid = "Your Account SID from TWILIO DASHBOARD";

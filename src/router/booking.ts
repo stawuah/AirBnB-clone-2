@@ -21,5 +21,6 @@ router.get("/getbooked", getAllBookedProperties);
 /* ------------------- deletion of booked property  --------------------- */
 router.get("/delbookedproperty/:id", deleteBookedProperty);
 
+/* ------------------- update booked property  --------------------- */
 router.put("/updatebookedprop", updateBookedProperty);
 export { router as BookingRoute };

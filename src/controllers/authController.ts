@@ -190,7 +190,7 @@ export const RequestOtp = async (
   return res.status(400).json({ msg: "Error with Requesting OTP" });
 };
 
-const ForgortPassword = async (req: Request, res: Response) => {
+const ForgotPassword = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
     console.log(email);
@@ -207,49 +207,45 @@ const ForgortPassword = async (req: Request, res: Response) => {
 
     const profile = await User.findById(existingUser._id);
 
-    if (profile) {
-      const { otp, expiry } = GenerateOtp();
-      profile.otp = otp;
-      profile.otp_expiry = expiry;
+    if (!profile) {
+      return res.status(404).json({ message: "User profile not found" });
+    }
 
-      const sendCode = await onRequestOTP(otp, profile.phone);
+    const { otp, expiry } = GenerateOtp();
+    profile.otp = otp;
+    profile.otp_expiry = expiry;
 
-      if (!sendCode) {
-        return res.status(400).json({
-          message: "Failed to verify your phone number to send you your code",
-        });
-      }
+    const sendCode = await onRequestOTP(otp, profile.phone);
 
-      return res.status(200).json({
-        message: "OTP has been sent to your registered Mobile Number!",
+    if (!sendCode) {
+      return res.status(400).json({
+        message: "Failed to verify your phone number to send you your code",
       });
     }
-    console.log(profile.otp);
 
     await profile.save();
 
     // Schedule a task to delete the OTP after 15 days
-    setTimeout(async () => {
-      let currentTime: Date = new Date();
-      currentTime.setTime(new Date().getTime() + 15 * 24 * 60 * 60 * 1000); // 15 days ago
-
-      if (profile) {
-        const { otp, expiry } = GenerateOtp();
-        profile.otp = otp;
-        profile.otp_expiry = expiry;
+    setInterval(async () => {
+      try {
+        let currentTime = new Date();
+        currentTime.setTime(currentTime.getTime() - 15 * 24 * 60 * 60 * 1000); // 15 days ago
 
         if (profile.otp_expiry <= currentTime) {
-          return true;
+          delete profile.otp;
+          await profile.save(); // Save the updated profile without OTP
+          return res.status(200).end();
         }
-        delete profile.otp;
+      } catch (error) {
+        console.error(error.toString());
       }
-    }, 15 * 24 * 60 * 60 * 1000); // Schedule task to run after 15 days
-
-    return res.status(200).end();
-  } catch (error: any) {
-    console.log(error.toString());
+    }, 15 * 24 * 60 * 60 * 1000);
+  } catch (error) {
+    console.error(error.toString());
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 const logout = async (req: Request, res: Response) => {
   try {
     // Clear the session token cookie
@@ -276,6 +272,6 @@ module.exports = {
   CustomerSignUp,
   CustomerVerify,
   RequestOtp,
-  ForgortPassword,
+  ForgotPassword,
   logout,
 };

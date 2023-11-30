@@ -12,6 +12,7 @@ import { RatingRoute } from "./router/ratings";
 import { ReservationRoute } from "./router/reservations";
 import { BookingRoute } from "./router/booking";
 import { PropertyRoute } from "./router/property";
+import deleteExpiredOTP from "./utils/Notification";
 connectDB();
 const app = express();
 
@@ -31,6 +32,11 @@ app.use("/resprop", ReservationRoute);
 app.use("/bookprop", BookingRoute);
 app.use("/property", PropertyRoute);
 const server = http.createServer(app);
+
+// Schedule a task to delete the OTP after 15 days as Background job
+setInterval(async () => {
+  await deleteExpiredOTP();
+}, 15 * 24 * 60 * 60 * 1000);
 
 server.listen(3030, () => {
   console.log("sever is listening on http://localhost:3030/");

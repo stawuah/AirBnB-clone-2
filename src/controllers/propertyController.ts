@@ -4,17 +4,8 @@ import { onRequestMessage } from "../utils/Notification";
 import cloudinary from "cloudinary";
 import { v2 as cloudinaryV2 } from "cloudinary";
 import dotenv from "dotenv";
-import twilio from "twilio";
 
 dotenv.config();
-
-cloudinaryV2.config({
-  cloud_name: process.env.CLOUD_NAME!,
-  api_key: process.env.API_KEY!,
-  api_secret: process.env.API_SECRET!,
-});
-
-const client = twilio(process.env.SID!, process.env.AUTH_TOKEN!);
 
 const getPropertyList = async (
   req: Request,
@@ -107,15 +98,6 @@ const createProperty = async (req: Request, res: Response) => {
       phone,
       "Hello, you have just made your bookings live it love it !!"
     );
-
-    // client.messages
-    //   .create({
-    //     from: "<YOUR_TWILIO_PHONE_NUMBER>",
-    //     to: "<USER_PHONE_NUMBER>",
-    //     body: `Hello ${newProperty.title}, Thank you for adding your property with Hunt's. Make much and help more!`,
-    //   })
-    //   .then((message) => console.log("Message has been sent"));
-
     const savedProperty = await newProperty.save();
     res.status(201).json({ savedProperty, sendMessage });
   } catch (e) {
@@ -144,14 +126,6 @@ const updateProperty = async (req: Request, res: Response) => {
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
-
-  client.messages
-    .create({
-      from: "<YOUR_TWILIO_PHONE_NUMBER>",
-      to: "<USER_PHONE_NUMBER>",
-      body: `Hello, you have just updated your property with Hunt's. Make much and help more!`,
-    })
-    .then((message) => console.log("Message has been sent"));
 };
 
 const deleteProperty = async (req: Request, res: Response) => {

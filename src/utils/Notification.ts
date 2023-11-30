@@ -1,23 +1,9 @@
-// import crypto from "crypto";
-
-// interface OtpExpiration {
-//   expiration: number;
-//   otp: string;
-// }
-
-// const OneTimePassword = () => crypto.randomBytes(2).toString("hex");
-// const Expiration = () => Date.now() + 3 * 60 * 1000;
-
-// export function expitationAndOtp(): OtpExpiration {
-//   return { expiration: Expiration(), otp: OneTimePassword() };
-// }
-
 /* ------------------- OTP --------------------- */
 
 export const GenerateOtp = () => {
   const otp = Math.floor(10000 + Math.random() * 900000);
   let expiry = new Date();
-  expiry.setTime(new Date().getTime() + 30 * 60 * 1000);
+  expiry.setTime(new Date().getTime() + 5 * 60 * 1000);
 
   return { otp, expiry };
 };
@@ -45,7 +31,7 @@ export const onRequestOTP = async (otp: number, toPhoneNumber: string) => {
 export const onRequestMessage = async (toPhoneNumber: number, body: string) => {
   try {
     const accountSid = "Your Account SID from TWILIO DASHBOARD";
-    const authToken = "YOUR AUTH TOKEN AS I SAID ON VIDEO";
+    const authToken = "YOUR AUTH TOKEN";
     const client = require("twilio")(accountSid, authToken);
 
     const response = await client.message.create({
@@ -59,3 +45,26 @@ export const onRequestMessage = async (toPhoneNumber: number, body: string) => {
     return false;
   }
 };
+
+/* --------------------   otpExpirationJob -------------*/
+import { User } from "../model/userSchema";
+
+const deleteExpiredOTP = async () => {
+  try {
+    let currentTime = new Date();
+    currentTime.setTime(currentTime.getTime() - 15 * 24 * 60 * 60 * 1000); // 15 days ago
+
+    const profiles = await User.find();
+
+    for (const profile of profiles) {
+      if (profile.otp_expiry <= currentTime) {
+        delete profile.otp;
+        await profile.save(); // Save the updated profile without OTP
+      }
+    }
+  } catch (error) {
+    console.error(error.toString());
+  }
+};
+
+export default deleteExpiredOTP;

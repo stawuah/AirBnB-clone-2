@@ -3,7 +3,7 @@ import { BookingModel } from "../model/bookingSchema";
 import { PropertyModel } from "../model/propertySchema";
 import twilio from "twilio";
 import dotenv from "dotenv";
-import { Types } from "mongoose";
+
 
 dotenv.config();
 

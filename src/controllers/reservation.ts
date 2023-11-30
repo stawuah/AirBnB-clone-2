@@ -1,7 +1,7 @@
 import { ReservationModel } from "../model/reservationSchema";
 import { Request, Response } from "express";
 import { onRequestMessage } from "../utils/Notification";
-import { ReservationInput } from "dto/customerDto";
+import { ReservationInput } from "../dto/customerDto";
 import { plainToClass } from "class-transformer";
 import { PropertyModel } from "../model/propertySchema";
 import { validate } from "class-validator";

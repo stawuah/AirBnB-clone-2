@@ -1,3 +1,7 @@
+
+import * as dotenv from "dotenv";
+dotenv.config({ path: __dirname + "/.env" });
+
 /* ------------------- OTP --------------------- */
 
 export const GenerateOtp = () => {
@@ -10,8 +14,8 @@ export const GenerateOtp = () => {
 
 export const onRequestOTP = async (otp: number, toPhoneNumber: string) => {
   try {
-    const accountSid = "Your Account SID from TWILIO DASHBOARD";
-    const authToken = "YOUR AUTH TOKEN AS I SAID ON VIDEO";
+    const accountSid = process.env.SID;
+    const authToken = process.env.ATOKEN;
     const client = require("twilio")(accountSid, authToken);
 
     const response = await client.message.create({
@@ -30,8 +34,8 @@ export const onRequestOTP = async (otp: number, toPhoneNumber: string) => {
 
 export const onRequestMessage = async (toPhoneNumber: number, body: string) => {
   try {
-    const accountSid = "Your Account SID from TWILIO DASHBOARD";
-    const authToken = "YOUR AUTH TOKEN";
+    const accountSid = process.env.SID;
+    const authToken = process.env.ATOKEN;
     const client = require("twilio")(accountSid, authToken);
 
     const response = await client.message.create({

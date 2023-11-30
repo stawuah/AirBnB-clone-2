@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const client = twilio(process.env.SID!, process.env.AUTH_TOKEN!);
+const client = twilio(process.env.SID!, process.env.ATOKEN!);
 
 const bookProperty = async (req: Request, res: Response) => {
   try {

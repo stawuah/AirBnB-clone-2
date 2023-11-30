@@ -45,20 +45,20 @@ const getAllProperty = async (req: Request, res: Response) => {
   }
 };
 
-const uploadImage = async (imagePath: string) => {
-  const options = {
-    use_filename: true,
-    unique_filename: false,
-    overwrite: true,
-  };
+// const uploadImage = async (imagePath: string) => {
+//   const options = {
+//     use_filename: true,
+//     unique_filename: false,
+//     overwrite: true,
+//   };
 
-  try {
-    const result = await cloudinary.uploader.upload(imagePath, options);
-    return result;
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   try {
+//     const result = await cloudinary.uploader.upload(imagePath, options);
+//     return result;
+//   } catch (error) {
+//     console.error(error);
+//   }
+//};
 
 const createProperty = async (req: Request, res: Response) => {
   try {
@@ -75,7 +75,7 @@ const createProperty = async (req: Request, res: Response) => {
       image,
       phone,
     } = req.body;
-    const imagePublic = await uploadImage(image);
+    // const imagePublic = await uploadImage(image);
 
     const newProperty = await PropertyModel.create({
       owner: req.user._id,
@@ -88,10 +88,10 @@ const createProperty = async (req: Request, res: Response) => {
       country,
       zipcode,
       available,
-      image: {
-        public_id: imagePublic.public_id,
-        url: imagePublic.secure_url,
-      },
+      // image: {
+      //   public_id: imagePublic.public_id,
+      //   url: imagePublic.secure_url,
+      // },
       phone: phone,
     });
     const sendMessage = await onRequestMessage(

@@ -39,5 +39,5 @@ setInterval(async () => {
 }, 15 * 24 * 60 * 60 * 1000);
 
 server.listen(3030, () => {
-  console.log("sever is listening on http://localhost:3030/");
+  console.log("sever is listening on http://localhost:3001/");
 });

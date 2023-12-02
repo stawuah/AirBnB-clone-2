@@ -10,3 +10,19 @@
   },
   "include": ["src/**/*"]
 }
+// {
+//   "compilerOptions": {
+//     "experimentalDecorators": true,
+//     "module": "commonjs",  // Use "commonjs" for Node.js environment
+//     "moduleResolution": "node",  // Use "node" for Node.js environment
+//     "baseUrl": "src",
+//     "outDir": "dist",
+//     "sourceMap": true,
+//     "noImplicitAny": true,
+//     "resolveJsonModule": true,  // If you are working with JSON imports
+//     "esModuleInterop": true,  // Enables interoperability between CommonJS and ES modules
+//     "forceConsistentCasingInFileNames": true  // Helps catch common casing issues in file names
+//   },
+//   "include": ["src/**/*"],
+//   "exclude": ["node_modules"]
+

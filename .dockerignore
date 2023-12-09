@@ -9,7 +9,7 @@
 .gitmodules
 .idea
 .data
-.sass-cache
+
 tests
 README.md
 Dockerfile

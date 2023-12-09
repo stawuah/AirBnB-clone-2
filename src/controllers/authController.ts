@@ -224,22 +224,6 @@ const ForgotPassword = async (req: Request, res: Response) => {
     }
 
     await profile.save();
-
-    // Schedule a task to delete the OTP after 15 days
-    setInterval(async () => {
-      try {
-        let currentTime = new Date();
-        currentTime.setTime(currentTime.getTime() - 15 * 24 * 60 * 60 * 1000); // 15 days ago
-
-        if (profile.otp_expiry <= currentTime) {
-          delete profile.otp;
-          await profile.save(); // Save the updated profile without OTP
-          return res.status(200).end();
-        }
-      } catch (error) {
-        console.error(error.toString());
-      }
-    }, 15 * 24 * 60 * 60 * 1000);
   } catch (error) {
     console.error(error.toString());
     return res.status(500).json({ message: "Internal Server Error" });

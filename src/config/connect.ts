@@ -1,19 +1,23 @@
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
-dotenv.config({ path: __dirname + "/.env" });
+dotenv.config();
 
-const connectDB = () => {
-  mongoose.Promise;
-  mongoose.connect(process.env.MONGO_URL);
-  const db = mongoose.connection;
+mongoose.Promise = global.Promise; // Use native promises
 
-  db.on("error", (error) => {
+const connectDB = async (): Promise<void> => {
+  const mongoUrl = process.env.MONGO_URL;
+
+  if (!mongoUrl) {
+    throw new Error("MongoDB connection string is not defined.");
+  }
+
+  try {
+    await mongoose.connect(mongoUrl);
+    console.log("MONGO DB CONNECTED");
+  } catch (error) {
     console.error("MongoDB connection error:", error);
-  });
-
-  db.once("open", () => {
-    console.log("MONGO DB CONNECTED +++++++");
-  });
+    throw new Error("Unable to connect to MongoDB");
+  }
 };
 
 export default connectDB;

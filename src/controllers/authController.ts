@@ -224,7 +224,7 @@ const ForgotPassword = async (req: Request, res: Response) => {
     }
 
     await profile.save();
-  } catch (error) {
+  } catch (error: any) {
     console.error(error.toString());
     return res.status(500).json({ message: "Internal Server Error" });
   }

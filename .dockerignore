@@ -9,7 +9,6 @@
 .gitmodules
 .idea
 .data
-
 tests
 README.md
 Dockerfile

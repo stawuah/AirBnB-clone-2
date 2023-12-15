@@ -13,6 +13,7 @@ import { ReservationRoute } from "./router/reservations";
 import { BookingRoute } from "./router/booking";
 import { PropertyRoute } from "./router/property";
 import deleteExpiredOTP from "./utils/Notification";
+const PORT = process.env.PORT
 connectDB();
 const app = express();
 
@@ -38,6 +39,6 @@ setInterval(async () => {
   await deleteExpiredOTP();
 }, 15 * 24 * 60 * 60 * 1000);
 
-server.listen(3030, () => {
-  console.log("sever is listening on http://localhost:3001/");
+server.listen(PORT, () => {
+  console.log(`sever is listening on http://localhost:${PORT}/`);
 });

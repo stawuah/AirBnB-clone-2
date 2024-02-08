@@ -59,7 +59,7 @@ export const CustomerSignUp = async (
   });
 
   if (result) {
-    // send OTP to customer
+
     await onRequestOTP(otp, phone);
 
     //Generate the Signature
@@ -68,7 +68,7 @@ export const CustomerSignUp = async (
       email: result.email,
       verified: result.verified,
     });
-    // Send the result
+
 
     return res.status(201).json({
       signature,
@@ -232,10 +232,15 @@ const ForgotPassword = async (req: Request, res: Response) => {
 
 const logout = async (req: Request, res: Response) => {
   try {
-    // Clear the session token cookie
-    res.clearCookie("HTINNDFKJ", {
+
+     const userId = req.params.id;
+    
+     if (userId) {
+      const decodedTokenUser = await User.findById(userId);
+
+       res.clearCookie("token", {
       domain: "localhost",
-      sameSite: "none",
+      sameSite: "*",
       secure: true,
     });
 
@@ -245,6 +250,7 @@ const logout = async (req: Request, res: Response) => {
       expires: new Date(Date.now() + 10 * 1000),
       httpOnly: true,
     });
+      {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
